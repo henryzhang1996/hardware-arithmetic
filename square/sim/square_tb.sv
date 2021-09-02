@@ -49,12 +49,22 @@ initial begin
     #1000;
     rst = 0;
     #1000;
-    for(i=0;i<65536;i++)begin
-        paper_test(i);
-    end
-    if(result == 1)begin
-        $display("test fail!!!");
-    end
+    //paper test 
+//    for(i=0;i<65536;i++)begin
+//        paper_test(i);
+//    end
+//    if(result == 1)begin
+//        $display("test fail!!!");
+//    end
+     
+    //restore test
+//    for(i=16'b0100_0000_0000_0001;i<16'b1111_1111_1111_1111;i=i+16'b1_0000_0000)begin
+//        restore_test(i);
+//    end
+//    if(result == 1)begin
+//        $display("test fail!!!");
+//    end
+
     #10000;
     $finish();
 end
@@ -73,6 +83,26 @@ begin
     @(finish);
     $display("sqr_root: %d,remainder: %d",sqr_root,remainder);
     if((sqr_root*sqr_root + remainder)!=in)begin
+        $display("Error!!");
+        result = 1;
+    end
+end
+endtask
+
+task restore_test;
+input   [15:0]  in;
+begin
+    #1000;
+    mode = 'd1;
+    data_in =   in;
+    $display("radicand: %b",in);
+    @(negedge clk);
+    start   =   'd1;
+    @(negedge clk);
+    start   =   'd0;
+    @(finish);
+    $display("root:%d,remainder:%d,in:%d",sqr_root[15:9],remainder[9:2],in[15:8]);
+    if((sqr_root[15:9]*sqr_root[15:9] + remainder[9:2])!=in[15:8]*64)begin
         $display("Error!!");
         result = 1;
     end
